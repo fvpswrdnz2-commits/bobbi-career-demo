@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#08183d" />
+  <meta name="description" content="熬夜波比求职咨询小程序产品说明" />
+  <title>熬夜波比 · 产品说明</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ===========================================
+       FIXED 16:9 STAGE: MANDATORY BASE STYLES
+       Slides are authored at 1920×1080 and scaled as a whole.
+       =========================================== */
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--stage-bg, #000);
+    }
+
+    .deck-viewport {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      background: var(--stage-bg, #000);
+    }
+
+    .deck-stage {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      transform-origin: 0 0;
+      background: var(--slide-bg, #fff);
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      display: block;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      background: var(--slide-bg, #fff);
+    }
+
+    .slide.active,
+    .slide.visible {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 1;
+    }
+
+    img,
+    video,
+    canvas,
+    svg {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .deck-controls {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      z-index: 1000;
+    }
+
+    @media print {
+      html,
+      body {
+        width: 1920px;
+        height: auto;
+        overflow: visible;
+        background: #fff;
+      }
+
+      .deck-viewport {
+        position: static;
+        overflow: visible;
+        background: #fff;
+      }
+
+      .deck-stage {
+        position: static;
+        width: auto;
+        height: auto;
+        transform: none !important;
+        background: none;
+      }
+
+      .slide {
+        position: relative;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        width: 1920px;
+        height: 1080px;
+        break-after: page;
+        page-break-after: always;
+      }
+
+      .slide:last-child {
+        break-after: auto;
+        page-break-after: auto;
+      }
+
+      .deck-controls {
+        display: none !important;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+      }
+    }
+
+    /* ===========================================
+       THEME TOKENS — matched to the approved prototype
+       =========================================== */
+    :root {
+      --ink: #08183d;
+      --ink-2: #16264d;
+      --orange: #ff6b00;
+      --orange-soft: #fff1e6;
+      --lilac: #f3f1ff;
+      --purple: #6e5bd4;
+      --green: #0e9f7a;
+      --red: #e24a34;
+      --text: #18213a;
+      --muted: #687086;
+      --line: #e6e8ef;
+      --surface: #f6f7fa;
+      --white: #ffffff;
+      --stage-bg: #dfe3ea;
+      --slide-bg: #eef1f5;
+      --shadow: 0 24px 70px rgba(8, 24, 61, .14);
+      --ease: cubic-bezier(.16, 1, .3, 1);
+    }
+
+    /* ===========================================
+       RESET & TYPOGRAPHY
+       =========================================== */
+    * { box-sizing: border-box; }
+    body {
+      color: var(--text);
+      font-family: "Noto Sans SC", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, a { font: inherit; }
+    button { color: inherit; }
+    a { color: inherit; text-decoration: none; }
+    h1, h2, h3, h4, p { margin: 0; }
+    h1, h2, h3, h4 { color: var(--ink); }
+    ::selection { color: #fff; background: var(--orange); }
+
+    /* ===========================================
+       SHARED SLIDE SHELL
+       =========================================== */
+    .slide {
+      background:
+        linear-gradient(90deg, rgba(8, 24, 61, .025) 1px, transparent 1px),
+        linear-gradient(rgba(8, 24, 61, .025) 1px, transparent 1px),
+        #eef1f5;
+      background-size: 48px 48px;
+      transition: opacity .28s ease;
+    }
+    .slide-frame {
+      position: absolute;
+      inset: 28px;
+      overflow: hidden;
+      background: rgba(255,255,255,.94);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .masthead {
+      position: absolute;
+      inset: 0 0 auto;
+      height: 86px;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,.96);
+      border-bottom: 1px solid var(--line);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+    .brand { display: flex; align-items: center; gap: 13px; color: var(--ink); }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      color: #fff;
+      background: var(--orange);
+      border-radius: 8px 2px 8px 2px;
+      font-weight: 900;
+    }
+    .chapter {
+      max-width: 610px;
+      padding-left: 16px;
+      color: var(--muted);
+      border-left: 4px solid var(--orange);
+      line-height: 1.45;
+      text-align: right;
+    }
+    .content { position: absolute; inset: 86px 0 0; padding: 48px 54px 46px; }
+    .eyebrow { color: var(--orange); font-size: 18px; font-weight: 800; letter-spacing: .08em; }
+    .section-title { margin-top: 16px; font-size: 68px; line-height: 1.08; letter-spacing: -.035em; }
+    .section-foot {
+      position: absolute;
+      left: 54px;
+      right: 54px;
+      bottom: 26px;
+      padding-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      color: #9097a8;
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+    }
+    .section-foot a { color: var(--orange); font-weight: 700; }
+
+    /* ===========================================
+       REVEAL MOTION
+       =========================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .62s var(--ease), transform .62s var(--ease);
+      transition-delay: var(--delay, 0ms);
+    }
+    .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+
+    /* ===========================================
+       LINKS & BUTTONS
+       =========================================== */
+    .link-row { display: flex; gap: 14px; flex-wrap: wrap; }
+    .link-button {
+      min-height: 56px;
+      padding: 0 22px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+      background: var(--orange);
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 800;
+      box-shadow: 0 12px 28px rgba(255,107,0,.22);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .link-button:hover { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(255,107,0,.28); }
+    .link-button.secondary { color: var(--ink); background: #fff; border: 1px solid #cfd4df; box-shadow: none; }
+
+    /* ===========================================
+       SLIDE 01 — COVER
+       =========================================== */
+    .cover .slide-frame { background: #fff; }
+    .cover .content { padding-top: 58px; }
+    .cover-title { width: 1100px; font-size: 88px; line-height: 1.12; letter-spacing: -.045em; }
+    .cover-title strong { color: var(--orange); }
+    .cover-summary { margin-top: 30px; width: 900px; color: var(--muted); font-size: 27px; line-height: 1.65; }
+    .cover .link-row { margin-top: 36px; }
+    .cover-stats {
+      position: absolute;
+      right: 54px;
+      top: 74px;
+      width: 500px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .cover-stats div { min-height: 168px; padding: 28px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .cover-stats div:nth-child(2n) { border-right: 0; }
+    .cover-stats div:nth-last-child(-n+2) { border-bottom: 0; }
+    .cover-stats b { display: block; color: var(--ink); font-size: 55px; line-height: 1; }
+    .cover-stats span { display: block; margin-top: 16px; color: var(--muted); font-size: 18px; line-height: 1.5; }
+    .cover-stats i { display: block; width: 28px; height: 4px; margin-bottom: 22px; background: var(--orange); }
+    .cover-note { position: absolute; left: 54px; bottom: 72px; display: flex; gap: 10px; color: var(--purple); font-size: 16px; font-weight: 700; }
+    .cover-note span { padding: 8px 12px; background: var(--lilac); border-radius: 4px; }
+
+    /* ===========================================
+       SLIDE 02 — CURRENT WORKFLOW
+       =========================================== */
+    .signal-grid { margin-top: 34px; display: grid; grid-template-columns: 360px 1fr; gap: 24px; }
+    .signal-panel { padding: 26px; background: var(--ink); color: #fff; border-radius: 10px; }
+    .signal-panel h3 { color: #fff; font-size: 31px; }
+    .signal-panel p { margin-top: 16px; color: #c8d0e2; font-size: 19px; line-height: 1.7; }
+    .signal-panel strong { display: block; margin-top: 28px; color: var(--orange); font-size: 62px; line-height: 1; }
+    .workflow-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .workflow-step { min-height: 180px; padding: 22px; background: #fff; border: 1px solid var(--line); border-radius: 8px; }
+    .workflow-step em { color: var(--orange); font-size: 15px; font-style: normal; font-weight: 900; }
+    .workflow-step h3 { margin-top: 26px; font-size: 27px; }
+    .workflow-step p { margin-top: 10px; color: var(--muted); font-size: 16px; line-height: 1.55; }
+    .workflow-step.hot { background: var(--orange-soft); border-color: #ffd0ad; }
+
+    /* ===========================================
+       SLIDE 03 — V1 SCOPE
+       =========================================== */
+    .scope-grid { margin-top: 36px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .scope-card { min-height: 430px; padding: 28px; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
+    .scope-card.featured { color: #fff; background: var(--ink); border-color: var(--ink); }
+    .scope-card .scope-index { color: var(--orange); font-size: 15px; font-weight: 900; }
+    .scope-card h3 { margin-top: 24px; font-size: 34px; }
+    .scope-card.featured h3 { color: #fff; }
+    .scope-card > p { margin-top: 14px; color: var(--muted); font-size: 18px; line-height: 1.6; }
+    .scope-card.featured > p { color: #c8d0e2; }
+    .scope-list { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 14px; }
+    .scope-list li { padding-top: 14px; display: flex; gap: 12px; border-top: 1px solid var(--line); font-size: 17px; line-height: 1.45; }
+    .featured .scope-list li { border-color: rgba(255,255,255,.14); }
+    .scope-list b { color: var(--orange); }
+
+    /* ===========================================
+       SLIDES 04–05 — REAL PRODUCT SCREENS
+       =========================================== */
+    .demo-label { display: inline-flex; align-items: center; gap: 9px; padding: 7px 11px; color: var(--orange); background: var(--orange-soft); border-radius: 4px; font-size: 14px; font-weight: 900; }
+    .phone-demo-grid { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .demo-step { min-height: 575px; padding: 20px; display: grid; grid-template-columns: 238px 1fr; gap: 20px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
+    .shot-phone { width: 238px; height: 448px; overflow: hidden; background: #eef1f5; border-radius: 28px; box-shadow: 0 16px 35px rgba(8,24,61,.18); }
+    .shot-phone img { width: 476px !important; height: auto; max-width: none !important; max-height: none !important; display: block; }
+    .demo-copy em { color: var(--orange); font-size: 15px; font-style: normal; font-weight: 900; }
+    .demo-copy h3 { margin-top: 14px; font-size: 27px; line-height: 1.3; }
+    .demo-copy p { margin-top: 12px; color: var(--muted); font-size: 16px; line-height: 1.6; }
+    .demo-copy a { display: inline-block; margin-top: 18px; color: var(--orange); font-size: 15px; font-weight: 800; }
+    .dual-demo { margin-top: 26px; display: grid; grid-template-columns: 520px 1fr; gap: 24px; }
+    .consult-demo, .admin-demo { height: 570px; padding: 22px; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
+    .consult-demo { display: grid; grid-template-columns: 238px 1fr; gap: 22px; align-items: center; }
+    .admin-demo { display: grid; grid-template-rows: 1fr auto; gap: 18px; }
+    .shot-admin { width: 100%; height: 390px; overflow: hidden; background: #eef1f5; border-radius: 10px; box-shadow: 0 16px 35px rgba(8,24,61,.14); }
+    .shot-admin img { width: 200% !important; height: auto; max-width: none !important; max-height: none !important; display: block; }
+    .admin-caption { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .admin-caption p { color: var(--muted); font-size: 16px; line-height: 1.55; }
+    .admin-caption b { display: block; margin-bottom: 7px; color: var(--ink); font-size: 20px; }
+
+    /* ===========================================
+       SLIDE 06 — ORDER SWIMLANES
+       =========================================== */
+    .lane-board { margin-top: 34px; display: grid; gap: 12px; }
+    .lane { min-height: 150px; display: grid; grid-template-columns: 150px repeat(5, 1fr); background: #fff; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+    .lane-name { padding: 24px; display: flex; align-items: center; color: var(--ink); background: var(--surface); border-right: 1px solid var(--line); font-size: 21px; font-weight: 900; }
+    .lane-step { position: relative; padding: 24px 18px; border-right: 1px solid var(--line); }
+    .lane-step:last-child { border-right: 0; }
+    .lane-step em { color: var(--orange); font-size: 13px; font-style: normal; font-weight: 900; }
+    .lane-step b { display: block; margin-top: 17px; color: var(--ink); font-size: 18px; line-height: 1.4; }
+    .lane-step small { display: block; margin-top: 7px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .lane-step.active { background: var(--orange-soft); }
+    .lane.system .lane-name { color: #fff; background: var(--ink); }
+    .lane.operator .lane-name { color: var(--purple); background: var(--lilac); }
+    .lane-note { margin-top: 18px; display: flex; justify-content: space-between; color: var(--muted); font-size: 16px; }
+    .lane-note strong { color: var(--orange); }
+
+    /* ===========================================
+       SLIDE 07 — DECISION & LINKS
+       =========================================== */
+    .decision-grid { margin-top: 34px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 24px; }
+    .decision-list { display: grid; gap: 14px; }
+    .decision-item { min-height: 126px; padding: 22px 24px; display: grid; grid-template-columns: 72px 1fr; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 9px; }
+    .decision-item span { color: var(--orange); font-size: 28px; font-weight: 900; }
+    .decision-item h3 { font-size: 24px; }
+    .decision-item p { margin-top: 7px; color: var(--muted); font-size: 16px; line-height: 1.5; }
+    .next-panel { padding: 32px; color: #fff; background: var(--ink); border-radius: 10px; }
+    .next-panel h3 { color: #fff; font-size: 36px; line-height: 1.3; }
+    .next-panel p { margin-top: 16px; color: #c8d0e2; font-size: 19px; line-height: 1.65; }
+    .next-panel .link-row { margin-top: 28px; display: grid; }
+    .next-panel .link-button { width: 100%; justify-content: space-between; }
+    .next-panel .link-button.secondary { color: var(--ink); }
+    .future-tags { margin-top: 24px; display: flex; gap: 9px; flex-wrap: wrap; }
+    .future-tags span { padding: 8px 11px; color: #574b9b; background: var(--lilac); border-radius: 4px; font-size: 14px; font-weight: 700; }
+
+    /* ===========================================
+       PRESENTATION CONTROLS
+       =========================================== */
+    .deck-controls {
+      padding: 7px 9px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+      background: rgba(8,24,61,.92);
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 999px;
+      box-shadow: 0 12px 30px rgba(8,24,61,.24);
+      backdrop-filter: blur(12px);
+    }
+    .deck-controls button { width: 38px; height: 34px; color: #fff; background: transparent; border: 0; border-radius: 999px; cursor: pointer; }
+    .deck-controls button:hover { background: rgba(255,255,255,.12); }
+    .counter { min-width: 74px; text-align: center; font-size: 13px; font-weight: 800; }
+    .progress-track { position: fixed; inset: auto 0 0; z-index: 1001; height: 4px; background: rgba(8,24,61,.14); }
+    .progress-bar { height: 100%; width: 0; background: var(--orange); transition: width .35s var(--ease); }
+
+    /* ===========================================
+       INLINE EDITING
+       =========================================== */
+    .edit-hotzone { position: fixed; top: 0; left: 0; z-index: 10000; width: 80px; height: 80px; cursor: pointer; }
+    .edit-toggle {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 10001;
+      width: 42px;
+      height: 42px;
+      opacity: 0;
+      pointer-events: none;
+      color: #fff;
+      background: var(--ink);
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: opacity .25s ease;
+    }
+    .edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+    [contenteditable="true"] { outline: 2px dashed var(--orange); outline-offset: 4px; }
+    .edit-toast { position: fixed; top: 18px; left: 72px; z-index: 10002; padding: 10px 14px; opacity: 0; color: #fff; background: var(--ink); border-radius: 7px; pointer-events: none; transition: opacity .2s ease; }
+    .edit-toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="deck-viewport">
+    <main class="deck-stage" id="deckStage" aria-label="熬夜波比产品说明">
+      <!-- 01 / 封面：直接说明这份方案解决什么，并把体验链接放在首屏。 -->
+      <section class="slide cover active visible" data-title="产品概览">
+        <div class="slide-frame">
+          <header class="masthead"><div class="brand"><span class="brand-mark">B</span>熬夜波比</div><div class="chapter">给 Bobby 的产品说明<br>一对一求职咨询小程序</div></header>
+          <div class="content">
+            <div class="eyebrow reveal" style="--delay:60ms">01 / 产品概览</div>
+            <h1 class="cover-title reveal editable" data-edit-id="s1-title" style="--delay:120ms">把一对一求职咨询，<br><strong>放进一个小程序里。</strong></h1>
+            <p class="cover-summary reveal editable" data-edit-id="s1-summary" style="--delay:190ms">小红书继续负责内容和获客，小程序负责找人、选时间、收材料、付款、发会议与查订单。波比保留前辈审核、档期确认和会议创建。</p>
+            <div class="link-row reveal" style="--delay:250ms">
+              <a class="link-button" href="https://bobbi-career-demo.vercel.app" target="_blank" rel="noreferrer">体验完整原型 <span>↗</span></a>
+              <a class="link-button secondary" href="https://bobbi-demo-portal.vercel.app" target="_blank" rel="noreferrer">产品说明链接 <span>↗</span></a>
+            </div>
+            <div class="cover-note reveal" style="--delay:310ms"><span>预约咨询</span><span>提供咨询</span><span>波比后台</span></div>
+            <aside class="cover-stats reveal" style="--delay:180ms">
+              <div><i></i><b>2W+</b><span>小红书粉丝<br>已有内容入口</span></div>
+              <div><i></i><b>6+</b><span>个 500 人群<br>已有私域基础</span></div>
+              <div><i></i><b>10</b><span>位投稿资料<br>已导入原型</span></div>
+              <div><i></i><b>27</b><span>个业务页面<br>覆盖三端流程</span></div>
+            </aside>
+            <footer class="section-foot"><span>按方向键、空格、滚轮或滑动翻页</span><a href="https://bobbi-career-demo.vercel.app" target="_blank" rel="noreferrer">bobbi-career-demo.vercel.app ↗</a></footer>
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 / 现有业务：说明规模和人工成本，不与产品范围页重复。 -->
+      <section class="slide" data-title="现有业务">
+        <div class="slide-frame">
+          <header class="masthead"><div class="brand"><span class="brand-mark">B</span>熬夜波比</div><div class="chapter">业务已经跑起来<br>重复沟通开始占用时间</div></header>
+          <div class="content">
+            <div class="eyebrow reveal">02 / 现有业务</div>
+            <h2 class="section-title reveal" style="--delay:70ms">订单越多，<strong style="color:var(--orange)">协调工作</strong>越容易堆在微信里。</h2>
+            <div class="signal-grid reveal" style="--delay:140ms">
+              <aside class="signal-panel"><h3>波比现在承担的角色</h3><p>内容主理人、前辈筛选者、时间协调者、收款人、资料中转人、会议管理员和售后联系人。</p><strong>6 个环节</strong><p>都依赖私聊记录和人工记忆。</p></aside>
+              <div class="workflow-grid">
+                <article class="workflow-step"><em>01</em><h3>私聊找人</h3><p>解释背景与需求，人工推荐对应投稿。</p></article>
+                <article class="workflow-step hot"><em>02</em><h3>确认档期</h3><p>分别询问时间、时长与价格，反复对齐。</p></article>
+                <article class="workflow-step"><em>03</em><h3>核对付款</h3><p>转账后记录金额、咨询对象与订单信息。</p></article>
+                <article class="workflow-step hot"><em>04</em><h3>收齐材料</h3><p>收简历和问题，再转发给对应咨询对象。</p></article>
+                <article class="workflow-step"><em>05</em><h3>创建会议</h3><p>创建腾讯会议，分别发送给双方。</p></article>
+                <article class="workflow-step hot"><em>06</em><h3>处理变化</h3><p>改期、取消、退款和统计继续人工跟进。</p></article>
+              </div>
+            </div>
+            <footer class="section-foot"><span>橙色项是最容易发生重复沟通的环节</span><span>02 / 07</span></footer>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 / 第一版范围：明确自动化与人工边界。 -->
+      <section class="slide" data-title="第一版范围">
+        <div class="slide-frame">
+          <header class="masthead"><div class="brand"><span class="brand-mark">B</span>熬夜波比</div><div class="chapter">先把一对一咨询做顺<br>群面与讲座后续接入</div></header>
+          <div class="content">
+            <div class="eyebrow reveal">03 / 第一版范围</div>
+            <h2 class="section-title reveal" style="--delay:70ms">自助完成标准动作，<strong style="color:var(--orange)">人工把住关键环节</strong>。</h2>
+            <div class="scope-grid reveal" style="--delay:140ms">
+              <article class="scope-card"><span class="scope-index">预约一侧</span><h3>自己找、自己选、一次交齐</h3><p>减少预约前的来回询问。</p><ul class="scope-list"><li><b>01</b>编号直达、标签筛选和一句话搜索</li><li><b>02</b>未来 7 天档期与固定时长</li><li><b>03</b>简历和咨询问题必填</li><li><b>04</b>支付、订单、改期和取消</li></ul></article>
+              <article class="scope-card featured"><span class="scope-index">波比后台</span><h3>把运营待办集中到一个地方</h3><p>所有订单、材料与会议都有记录。</p><ul class="scope-list"><li><b>01</b>导入资料、邀请填写与审核发布</li><li><b>02</b>统一维护价格和可售档期</li><li><b>03</b>人工创建会议后录入订单</li><li><b>04</b>退款、算账与线下结算登记</li></ul></article>
+              <article class="scope-card"><span class="scope-index">提供咨询一侧</span><h3>只看到与自己有关的安排</h3><p>材料在付款后开放，到期自动收回。</p><ul class="scope-list"><li><b>01</b>查看下一场咨询和待办</li><li><b>02</b>查看对应简历与咨询问题</li><li><b>03</b>查看会议信息</li><li><b>04</b>发起改期、取消与资料维护</li></ul></article>
+            </div>
+            <footer class="section-foot"><span>第一版会议由波比人工创建，系统负责记录和通知</span><span>03 / 07</span></footer>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04 / 真实产品演示：预约路径使用当前原型截图。 -->
+      <section class="slide" data-title="预约咨询演示">
+        <div class="slide-frame">
+          <header class="masthead"><div class="brand"><span class="brand-mark">B</span>熬夜波比</div><div class="chapter">实际产品演示<br>预约咨询</div></header>
+          <div class="content">
+            <div class="demo-label reveal">当前原型真实页面</div>
+            <h2 class="section-title reveal" style="--delay:70ms">从找到合适的人，到提交预约。</h2>
+            <div class="phone-demo-grid reveal" style="--delay:140ms">
+              <article class="demo-step"><div class="shot-phone"><img src="assets/student-home.png" alt="预约咨询首页" /></div><div class="demo-copy"><em>01 / 浏览</em><h3>首页统一排序</h3><p>快捷方向和投稿列表集中展示，默认按已确认的匹配逻辑排序。</p><a href="https://bobbi-career-demo.vercel.app/prototype/index.html#/student-home" target="_blank" rel="noreferrer">打开首页 ↗</a></div></article>
+              <article class="demo-step"><div class="shot-phone"><img src="assets/student-search.png" alt="智能搜索页面" /></div><div class="demo-copy"><em>02 / 搜索</em><h3>看得懂推荐理由</h3><p>支持编号、标签和一句话需求；结果说明匹配的教育、经历和档期。</p><a href="https://bobbi-career-demo.vercel.app/prototype/index.html#/student-search" target="_blank" rel="noreferrer">打开搜索 ↗</a></div></article>
+              <article class="demo-step"><div class="shot-phone"><img src="assets/student-booking.png" alt="确认预约页面" /></div><div class="demo-copy"><em>03 / 预约</em><h3>简历和问题一次交齐</h3><p>选定时间和时长后提交必填材料，确认金额并进入支付。</p><a href="https://bobbi-career-demo.vercel.app/prototype/index.html#/student-booking" target="_blank" rel="noreferrer">打开预约 ↗</a></div></article>
+            </div>
+            <footer class="section-foot"><span>三步属于同一条预约路径，顺序连续</span><span>04 / 07</span></footer>
+          </div>
+        </div>
+      </section>
+
+      <!-- 05 / 真实产品演示：提供咨询与后台分区呈现，避免混成连续步骤。 -->
+      <section class="slide" data-title="咨询与后台演示">
+        <div class="slide-frame">
+          <header class="masthead"><div class="brand"><span class="brand-mark">B</span>熬夜波比</div><div class="chapter">实际产品演示<br>提供咨询与波比后台</div></header>
+          <div class="content">
+            <div class="demo-label reveal">两个不同角色，各自完成自己的工作</div>
+            <h2 class="section-title reveal" style="--delay:70ms">一边看咨询安排，一边处理运营待办。</h2>
+            <div class="dual-demo reveal" style="--delay:140ms">
+              <article class="consult-demo"><div class="shot-phone"><img src="assets/senior-workbench.png" alt="咨询工作台" /></div><div class="demo-copy"><em>提供咨询</em><h3>下一场安排放在最前面</h3><p>查看已开放的资料、会议信息、改期待办与个人资料状态。</p><a href="https://bobbi-career-demo.vercel.app/prototype/index.html#/senior-workbench" target="_blank" rel="noreferrer">打开咨询工作台 ↗</a></div></article>
+              <article class="admin-demo"><div class="shot-admin"><img src="assets/admin-dashboard.png" alt="波比后台仪表盘" /></div><div class="admin-caption"><p><b>波比后台</b>先显示今天必须处理的会议、咨询、审核与异常，避免待办散在聊天记录里。</p><p><b>保持人工判断</b>资料审核、档期确认、腾讯会议创建与线下结算仍由波比完成。</p></div></article>
+            </div>
+            <footer class="section-foot"><a href="https://bobbi-career-demo.vercel.app/prototype/index.html#/admin-dashboard" target="_blank" rel="noreferrer">打开波比后台 ↗</a><span>05 / 07</span></footer>
+          </div>
+        </div>
+      </section>
+
+      <!-- 06 / 履约闭环：使用泳道区分角色和系统动作。 -->
+      <section class="slide" data-title="订单闭环">
+        <div class="slide-frame">
+          <header class="masthead"><div class="brand"><span class="brand-mark">B</span>熬夜波比</div><div class="chapter">一笔订单怎么走完<br>三条泳道各司其职</div></header>
+          <div class="content">
+            <div class="eyebrow reveal">06 / 订单闭环</div>
+            <h2 class="section-title reveal" style="--delay:70ms">每一步都有状态，变化以后也找得到记录。</h2>
+            <div class="lane-board reveal" style="--delay:140ms">
+              <div class="lane"><div class="lane-name">预约一侧</div><div class="lane-step"><em>01</em><b>选择人选与档期</b><small>未来 7 天</small></div><div class="lane-step"><em>02</em><b>提交简历与问题</b><small>两项必填</small></div><div class="lane-step active"><em>03</em><b>完成支付</b><small>生成正式订单</small></div><div class="lane-step"><em>04</em><b>查看会议</b><small>开始前提醒</small></div><div class="lane-step"><em>05</em><b>完成咨询</b><small>订单自动完成</small></div></div>
+              <div class="lane system"><div class="lane-name">系统</div><div class="lane-step"><em>01</em><b>锁定档期</b><small>15 分钟</small></div><div class="lane-step"><em>02</em><b>保护材料</b><small>按订单授权</small></div><div class="lane-step active"><em>03</em><b>确认付款</b><small>自动接单</small></div><div class="lane-step"><em>04</em><b>通知双方</b><small>会议与变化</small></div><div class="lane-step"><em>05</em><b>统计与算账</b><small>后台生成记录</small></div></div>
+              <div class="lane operator"><div class="lane-name">波比与<br>提供咨询</div><div class="lane-step"><em>01</em><b>维护可售档期</b><small>提前确认供给</small></div><div class="lane-step"><em>02</em><b>查看对应材料</b><small>付款后开放</small></div><div class="lane-step active"><em>03</em><b>创建腾讯会议</b><small>波比人工完成</small></div><div class="lane-step"><em>04</em><b>处理改期取消</b><small>规则自动计算</small></div><div class="lane-step"><em>05</em><b>线下结算</b><small>后台登记结果</small></div></div>
+            </div>
+            <div class="lane-note reveal" style="--delay:220ms"><span>会议 API 和自动分账留到后续版本</span><strong>第一版重点：减少沟通、保留控制、留下数据</strong></div>
+            <footer class="section-foot"><span>角色分开表达，避免把不同人的动作误写成同一条步骤</span><span>06 / 07</span></footer>
+          </div>
+        </div>
+      </section>
+
+      <!-- 07 / 结尾：把需要 Bobby 确认的事情和体验链接放在同一页。 -->
+      <section class="slide" data-title="下一步">
+        <div class="slide-frame">
+          <header class="masthead"><div class="brand"><span class="brand-mark">B</span>熬夜波比</div><div class="chapter">下一步<br>先确认方向，再决定是否投入开发</div></header>
+          <div class="content">
+            <div class="eyebrow reveal">07 / 希望和你确认</div>
+            <h2 class="section-title reveal" style="--delay:70ms">先用原型聊清楚三件事。</h2>
+            <div class="decision-grid reveal" style="--delay:140ms">
+              <div class="decision-list">
+                <article class="decision-item"><span>01</span><div><h3>业务流程是否符合实际</h3><p>预约、付款、材料、会议、改期、取消和结算有没有遗漏或理解偏差。</p></div></article>
+                <article class="decision-item"><span>02</span><div><h3>第一版范围是否值得做</h3><p>先上线一对一咨询，群面与讲座进入后续阶段。</p></div></article>
+                <article class="decision-item"><span>03</span><div><h3>双方如何一起推进</h3><p>确定运营分工、资料授权、主体账号与下一轮验证方式。</p></div></article>
+                <div class="future-tags"><span>群面报名与练习</span><span>求职讲座</span><span>统一用户数据</span><span>复购与经营分析</span></div>
+              </div>
+              <aside class="next-panel"><h3>先点开看看，再一起聊。</h3><p>完整原型包含预约咨询、提供咨询和波比后台。页面里的支付、通知和会议为产品流程展示，正式开发将在合作确认和主体条件具备后开始。</p><div class="link-row"><a class="link-button" href="https://bobbi-career-demo.vercel.app" target="_blank" rel="noreferrer">体验完整原型 <span>↗</span></a><a class="link-button secondary" href="https://bobbi-demo-portal.vercel.app" target="_blank" rel="noreferrer">打开产品说明 <span>↗</span></a></div></aside>
+            </div>
+            <footer class="section-foot"><span>熬夜波比 · 一对一求职咨询小程序</span><a href="https://bobbi-career-demo.vercel.app" target="_blank" rel="noreferrer">bobbi-career-demo.vercel.app ↗</a></footer>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Presentation controls live outside the fixed slide stage. -->
+  <nav class="deck-controls" aria-label="幻灯片控制">
+    <button id="prevSlide" type="button" aria-label="上一页">←</button>
+    <span class="counter" id="counter">01 / 07</span>
+    <button id="nextSlide" type="button" aria-label="下一页">→</button>
+  </nav>
+  <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+
+  <!-- Editing affordance: hover the top-left corner or press E. -->
+  <div class="edit-hotzone" aria-hidden="true"></div>
+  <button class="edit-toggle" id="editToggle" type="button" title="编辑文字（E）" aria-label="切换文字编辑">✎</button>
+  <div class="edit-toast" id="editToast" role="status">已进入文字编辑</div>
+
+  <script>
+    /* ===========================================
+       SLIDE PRESENTATION CONTROLLER
+       =========================================== */
+    class SlidePresentation {
+      constructor() {
+        this.slides = [...document.querySelectorAll('.slide')];
+        this.currentSlide = Math.min(Math.max((parseInt(location.hash.slice(1), 10) || 1) - 1, 0), this.slides.length - 1);
+        this.stage = document.getElementById('deckStage');
+        this.counter = document.getElementById('counter');
+        this.progress = document.getElementById('progressBar');
+        this.touchStartX = 0;
+        this.wheelLocked = false;
+        this.setupStageScale();
+        this.setupControls();
+        this.showSlide(this.currentSlide, false);
+      }
+
+      setupStageScale() {
+        const scale = () => {
+          const factor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+          const x = (window.innerWidth - 1920 * factor) / 2;
+          const y = (window.innerHeight - 1080 * factor) / 2;
+          this.stage.style.transform = `translate(${x}px, ${y}px) scale(${factor})`;
+        };
+        scale();
+        window.addEventListener('resize', scale);
+      }
+
+      setupControls() {
+        document.getElementById('nextSlide').addEventListener('click', () => this.next());
+        document.getElementById('prevSlide').addEventListener('click', () => this.prev());
+        document.addEventListener('keydown', (event) => {
+          if (event.target.getAttribute?.('contenteditable') === 'true') return;
+          if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); this.next(); }
+          if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key)) { event.preventDefault(); this.prev(); }
+          if (event.key === 'Home') this.showSlide(0);
+          if (event.key === 'End') this.showSlide(this.slides.length - 1);
+        });
+        window.addEventListener('wheel', (event) => {
+          if (this.wheelLocked || Math.abs(event.deltaY) < 16) return;
+          this.wheelLocked = true;
+          event.deltaY > 0 ? this.next() : this.prev();
+          setTimeout(() => { this.wheelLocked = false; }, 520);
+        }, { passive: true });
+        window.addEventListener('touchstart', (event) => { this.touchStartX = event.changedTouches[0].clientX; }, { passive: true });
+        window.addEventListener('touchend', (event) => {
+          const delta = event.changedTouches[0].clientX - this.touchStartX;
+          if (Math.abs(delta) > 48) delta < 0 ? this.next() : this.prev();
+        }, { passive: true });
+        window.addEventListener('hashchange', () => {
+          const index = Math.min(Math.max((parseInt(location.hash.slice(1), 10) || 1) - 1, 0), this.slides.length - 1);
+          this.showSlide(index, false);
+        });
+      }
+
+      showSlide(index, updateHash = true) {
+        this.currentSlide = Math.max(0, Math.min(index, this.slides.length - 1));
+        this.slides.forEach((slide, i) => {
+          slide.classList.toggle('active', i === this.currentSlide);
+          slide.classList.toggle('visible', i === this.currentSlide);
+          slide.setAttribute('aria-hidden', i === this.currentSlide ? 'false' : 'true');
+        });
+        const shown = String(this.currentSlide + 1).padStart(2, '0');
+        const total = String(this.slides.length).padStart(2, '0');
+        this.counter.textContent = `${shown} / ${total}`;
+        this.progress.style.width = `${((this.currentSlide + 1) / this.slides.length) * 100}%`;
+        document.title = `熬夜波比 · ${this.slides[this.currentSlide].dataset.title}`;
+        if (updateHash) history.replaceState(null, '', `#${this.currentSlide + 1}`);
+      }
+
+      next() { this.showSlide(Math.min(this.currentSlide + 1, this.slides.length - 1)); }
+      prev() { this.showSlide(Math.max(this.currentSlide - 1, 0)); }
+    }
+
+    /* ===========================================
+       INLINE TEXT EDITOR
+       =========================================== */
+    class InlineEditor {
+      constructor() {
+        this.isActive = false;
+        this.nodes = [...document.querySelectorAll('.editable')];
+        this.toggle = document.getElementById('editToggle');
+        this.toast = document.getElementById('editToast');
+        this.restore();
+        this.setup();
+      }
+
+      setup() {
+        this.toggle.addEventListener('click', () => this.toggleEditMode());
+        document.querySelector('.edit-hotzone').addEventListener('click', () => this.toggleEditMode());
+        document.addEventListener('keydown', (event) => {
+          if ((event.key === 'e' || event.key === 'E') && event.target.getAttribute?.('contenteditable') !== 'true') this.toggleEditMode();
+          if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') { event.preventDefault(); this.save(); }
+        });
+      }
+
+      toggleEditMode() {
+        this.isActive = !this.isActive;
+        this.nodes.forEach(node => node.setAttribute('contenteditable', String(this.isActive)));
+        this.toggle.classList.toggle('active', this.isActive);
+        this.toast.textContent = this.isActive ? '已进入文字编辑，Ctrl+S 保存' : '已退出文字编辑';
+        this.toast.classList.add('show');
+        setTimeout(() => this.toast.classList.remove('show'), 1800);
+      }
+
+      save() {
+        const content = {};
+        this.nodes.forEach(node => { content[node.dataset.editId] = node.innerHTML; });
+        localStorage.setItem('bobbi-product-deck-edits', JSON.stringify(content));
+        this.toast.textContent = '文字已保存在当前浏览器';
+        this.toast.classList.add('show');
+        setTimeout(() => this.toast.classList.remove('show'), 1800);
+      }
+
+      restore() {
+        try {
+          const content = JSON.parse(localStorage.getItem('bobbi-product-deck-edits') || '{}');
+          Object.entries(content).forEach(([id, html]) => {
+            const node = document.querySelector(`[data-edit-id="${id}"]`);
+            if (node) node.innerHTML = html;
+          });
+        } catch (_) { /* Ignore malformed local edits. */ }
+      }
+    }
+
+    /* JS-based hover grace period keeps the hidden edit button reachable. */
+    const hotzone = document.querySelector('.edit-hotzone');
+    const editToggle = document.getElementById('editToggle');
+    let hideTimeout = null;
+    let editor;
+    hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); editToggle.classList.add('show'); });
+    hotzone.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor?.isActive) editToggle.classList.remove('show'); }, 400); });
+    editToggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+    editToggle.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor?.isActive) editToggle.classList.remove('show'); }, 400); });
+
+    const presentation = new SlidePresentation();
+    editor = new InlineEditor();
+  </script>
+</body>
+</html>

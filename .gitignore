@@ -1,0 +1,23 @@
+# Synced reference material is managed by the ChatGPT project.
+sources/
+
+# Dependencies and generated output
+.pnpm-store/
+**/node_modules/
+**/.next/
+**/.wrangler/
+**/dist/
+**/outputs/
+**/work/
+
+# Local deployment and environment state
+**/.vercel/
+**/.env*
+!**/.env.example
+
+# Local artifacts
+*.zip
+.DS_Store
+*.db
+*.sqlite
+*.sqlite3

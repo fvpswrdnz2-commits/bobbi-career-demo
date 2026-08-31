@@ -1,0 +1,9 @@
+{
+  "name": "bobby-product-prototype",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check src/app.js && node --check src/mobile-pages.js && node --check src/admin-pages.js && node --check src/search.js && node tests/render-check.mjs"
+  }
+}
