@@ -211,3 +211,6 @@
 - 新增根 `.gitignore`，排除 `sources/`、依赖、构建产物、环境变量、本地 Vercel 状态、数据库与压缩包；暂存文件检查未发现这些目录或常见密钥格式。
 - 自动检查全部通过：原型 27/27 页面、Frontend Slides 7 页与 5 张真实截图、历史 Demo 10 条资料与角色流程、公开发布包 2/2。
 - 计划创建私有 GitHub 仓库 `fvpswrdnz2-commits/bobbi-career-demo`，并把现有 `bobbi-career-demo`、`bobbi-demo-portal` 两个 Vercel 项目分别连接到 `share-site/public` 和 `bobbi-portal`。外部上传与连接需在敏感资料确认后执行。
+- 用户确认敏感资料上传后，已创建私有 GitHub 仓库 `https://github.com/fvpswrdnz2-commits/bobbi-career-demo`，推送根提交并让本地 `main` 跟踪 `origin/main`。
+- 安装 Vercel GitHub App 时采用“Only select repositories”，只授予 `bobbi-career-demo` 仓库权限；两个既有 Vercel 项目均已连接该仓库，生产分支均为 `main`。
+- Vercel Root Directory 已分别设置为：完整原型 `share-site/public`、Frontend Slides `bobbi-portal`。后续交付改为测试通过后提交并推送，由 Vercel 自动部署，不再手工执行生产部署命令。

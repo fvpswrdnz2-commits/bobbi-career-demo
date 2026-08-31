@@ -503,6 +503,6 @@ PostgreSQL 是订单、档期、资金、状态和任务的唯一事实来源。
 - 项目根目录是唯一 Git 仓库；`prototype/`、`bobbi-portal/`、`demo/`、`share-site/` 与 `memory-bank/` 统一随 `main` 分支版本化，避免子目录各自形成无法同步的历史。
 - `sources/` 是 ChatGPT 项目同步的只读资料，不进入 GitHub；依赖目录、构建产物、环境变量、本地 Vercel 状态和压缩包也由根 `.gitignore` 排除。
 - `prototype/` 仍是产品原型的源文件；`share-site/public/prototype/` 是对外发布快照。修改原型后必须同步快照并运行两组检查，不能让 Git 自动发布掩盖两份内容不一致的问题。
-- GitHub 目标为私有仓库 `fvpswrdnz2-commits/bobbi-career-demo`。Vercel 继续使用现有两个项目和稳定域名：`bobbi-career-demo` 的 Root Directory 为 `share-site/public`，`bobbi-demo-portal` 的 Root Directory 为 `bobbi-portal`。
+- GitHub 私有仓库为 `fvpswrdnz2-commits/bobbi-career-demo`。Vercel 继续使用现有两个项目和稳定域名：`bobbi-career-demo` 的 Root Directory 为 `share-site/public`，`bobbi-demo-portal` 的 Root Directory 为 `bobbi-portal`。
 - 两个 Vercel 项目均以 GitHub `main` 为生产分支。连接完成后，日常交付流程是“修改 → 测试 → 提交 → 推送”；推送触发 Vercel 自动构建与发布，不再执行手工 `vercel deploy`。
-- GitHub/Vercel 连接尚未完成时，上述仓库地址与 Root Directory 是明确的交付目标，不得误记为已经生效；完成后需在本节和 `progress.md` 记录验证结果。
+- 两个项目均已通过 Vercel GitHub App 连接该私有仓库，生产分支为 `main`；GitHub App 仅授权 `bobbi-career-demo` 仓库。连接状态、根目录与稳定域名必须在重大发布调整后重新核对。
