@@ -479,7 +479,7 @@ PostgreSQL 是订单、档期、资金、状态和任务的唯一事实来源。
 当前存在两条发布链路：
 
 - 妙搭旧快照：HTML 托管应用 `app_17cyv0x8ae6`，公开地址为 `https://onhzes97tk.feishuapp.com/app/app_17cyv0x8ae6`。该地址尚未同步本轮删除页面地图的改动，重新发布前不得作为本轮验收入口。
-- 当前完整原型：Vercel 项目 `bobbi-career-demo` 已发布至 `https://bobbi-career-demo.vercel.app`；不承诺中国大陆稳定可达。
+- 当前完整原型：Vercel 项目 `bobbi-career-demo` 的正式体验地址为 `https://career.bobbi.top`，`https://bobbi-career-demo.vercel.app` 仅作为 Vercel 默认备用地址；不承诺中国大陆稳定可达。
 - 备用全球链接：Sites 项目已发布至 `https://bobbi-career-demo.josiema18800126467.chatgpt.site`。由于中国大陆可达性不作为该域名的承诺，它不能替代妙搭链接作为国内体验入口。
 
 `memory-bank/deployment-and-domain.md` 记录 Demo 阶段和正式合作后的域名、实名认证、ICP 备案、DNS 与 HTTPS 决策边界。Demo 阶段不要求自购域名。
@@ -495,7 +495,7 @@ PostgreSQL 是订单、档期、资金、状态和任务的唯一事实来源。
 - 首尾页均放置完整原型与三个角色入口；正文使用中文，不逐句附英文，不使用“不是……而是……”等模板化对照句。
 - 首尾页同时提供公开 GitHub 仓库入口；入口复用现有次级按钮样式，封面横向排列、结尾面板纵向排列，不新增独立导航系统。
 - `bobbi-portal/tests/check.mjs`：验证 7 页固定舞台、三入口链接、5 张实机截图、两张产品演示页、键盘/触控控制、原型配色，以及不含页面地图和禁用文案。
-- 独立 Vercel 项目 `bobbi-demo-portal` 稳定地址为 `https://bobbi-demo-portal.vercel.app`；完整原型由 `bobbi-career-demo` 承载，两者可以分别更新和回滚。
+- 独立 Vercel 项目 `bobbi-demo-portal` 的正式产品说明地址为 `https://portal.bobbi.top`，`https://bobbi-demo-portal.vercel.app` 仅作为 Vercel 默认备用地址；完整原型由 `bobbi-career-demo` 承载，两者可以分别更新和回滚。
 
 该产品提案属于方案 B 展示资产，不进入方案 A 小程序生产代码。真实浏览器逐页核对桌面与手机视口、翻页状态和控制台后方可覆盖发布；截图只展示 Demo 状态，不代表支付、上传、通知或会议等生产能力已实现。
 
@@ -504,6 +504,6 @@ PostgreSQL 是订单、档期、资金、状态和任务的唯一事实来源。
 - 项目根目录是唯一 Git 仓库；`prototype/`、`bobbi-portal/`、`demo/`、`share-site/` 与 `memory-bank/` 统一随 `main` 分支版本化，避免子目录各自形成无法同步的历史。
 - `sources/` 是 ChatGPT 项目同步的只读资料，不进入 GitHub；依赖目录、构建产物、环境变量、本地 Vercel 状态和压缩包也由根 `.gitignore` 排除。
 - `prototype/` 仍是产品原型的源文件；`share-site/public/prototype/` 是对外发布快照。修改原型后必须同步快照并运行两组检查，不能让 Git 自动发布掩盖两份内容不一致的问题。
-- GitHub 公开仓库为 `fvpswrdnz2-commits/bobbi-career-demo`，根目录使用中英文双 README。Vercel 继续使用现有两个项目和稳定域名：`bobbi-career-demo` 的 Root Directory 为 `share-site/public`，`bobbi-demo-portal` 的 Root Directory 为 `bobbi-portal`。
+- GitHub 公开仓库为 `fvpswrdnz2-commits/bobbi-career-demo`，根目录使用中英文双 README。Vercel 继续使用现有两个项目：`bobbi-career-demo` 的 Root Directory 为 `share-site/public`、正式域名为 `career.bobbi.top`；`bobbi-demo-portal` 的 Root Directory 为 `bobbi-portal`、正式域名为 `portal.bobbi.top`。
 - 两个 Vercel 项目均以 GitHub `main` 为生产分支。连接完成后，日常交付流程是“修改 → 测试 → 提交 → 推送”；推送触发 Vercel 自动构建与发布，不再执行手工 `vercel deploy`。
 - 两个项目均已通过 Vercel GitHub App 连接该私有仓库，生产分支为 `main`；GitHub App 仅授权 `bobbi-career-demo` 仓库。连接状态、根目录与稳定域名必须在重大发布调整后重新核对。

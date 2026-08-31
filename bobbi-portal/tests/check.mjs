@@ -11,9 +11,18 @@ const entries = [
   ["波比后台", "#/admin-dashboard"],
 ];
 
+const prototypeBaseUrl = "https://career.bobbi.top";
+const portalUrl = "https://portal.bobbi.top";
+
 for (const [label, route] of entries) {
   assert.ok(html.includes(label), `缺少入口：${label}`);
-  assert.ok(html.includes(route), `${label} 的跳转地址不正确`);
+  assert.ok(html.includes(`${prototypeBaseUrl}/prototype/index.html${route}`), `${label} 的跳转地址不正确`);
+}
+
+assert.equal(html.split(prototypeBaseUrl).length - 1, 9, "完整原型的 9 个链接必须统一使用 career.bobbi.top");
+assert.equal(html.split(portalUrl).length - 1, 2, "产品说明的首尾入口必须统一使用 portal.bobbi.top");
+for (const legacyUrl of ["https://bobbi-career-demo.vercel.app", "https://bobbi-demo-portal.vercel.app"]) {
+  assert.ok(!html.includes(legacyUrl), `产品说明不应继续使用旧地址：${legacyUrl}`);
 }
 
 const githubUrl = "https://github.com/fvpswrdnz2-commits/bobbi-career-demo";
@@ -39,4 +48,4 @@ for (const forbidden of ["页面地图", "Zara", "style preview", "template.html
   assert.ok(!html.includes(forbidden), `独立产品说明不应出现“${forbidden}”`);
 }
 
-console.log("PASS slides: 7 fixed-stage slides, prototype-matched theme, 5 real screenshots, first/last GitHub links, keyboard/touch navigation");
+console.log("PASS slides: 7 fixed-stage slides, custom-domain links, prototype-matched theme, 5 real screenshots, first/last GitHub links, keyboard/touch navigation");
