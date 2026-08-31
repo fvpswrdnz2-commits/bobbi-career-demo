@@ -16,6 +16,10 @@ for (const [label, route] of entries) {
   assert.ok(html.includes(route), `${label} 的跳转地址不正确`);
 }
 
+const githubUrl = "https://github.com/fvpswrdnz2-commits/bobbi-career-demo";
+assert.equal((html.match(new RegExp(githubUrl, "g")) || []).length, 2, "第一页和最后一页都必须提供 GitHub 入口");
+assert.equal((html.match(/>查看 GitHub <span>↗<\/span><\/a>/g) || []).length, 2, "GitHub 入口文案与样式应保持一致");
+
 assert.equal((html.match(/<section class="slide/g) || []).length, 7, "产品说明应保持为 7 页短演示");
 assert.ok(html.includes('width: 1920px'), "Frontend Slides 必须使用 1920×1080 固定舞台");
 assert.ok(html.includes('class SlidePresentation'), "必须包含演示控制器");
@@ -35,4 +39,4 @@ for (const forbidden of ["页面地图", "Zara", "style preview", "template.html
   assert.ok(!html.includes(forbidden), `独立产品说明不应出现“${forbidden}”`);
 }
 
-console.log("PASS slides: 7 fixed-stage slides, prototype-matched theme, 5 real screenshots, 3 entry links, keyboard/touch navigation");
+console.log("PASS slides: 7 fixed-stage slides, prototype-matched theme, 5 real screenshots, first/last GitHub links, keyboard/touch navigation");

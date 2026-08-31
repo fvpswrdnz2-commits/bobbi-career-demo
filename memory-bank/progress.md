@@ -216,3 +216,10 @@
 - Vercel Root Directory 已分别设置为：完整原型 `share-site/public`、Frontend Slides `bobbi-portal`。后续交付改为测试通过后提交并推送，由 Vercel 自动部署，不再手工执行生产部署命令。
 - 新增中文 `README.md` 与英文 `README.en.md`，包含双语切换、在线体验、功能范围、目录结构、本地检查、双方案边界和数据使用说明。
 - 用户知悉仓库包含 Bobby 联系方式、十份公开投稿资料和完整产品文档，并明确要求保留现有内容原样公开；GitHub 仓库可见性据此调整为 Public。
+
+## 2026-08-31：产品说明首尾页增加 GitHub 入口
+
+- 使用 Frontend Slides 的现有固定舞台和按钮体系，在第 1 页与第 7 页分别增加公开仓库入口 `https://github.com/fvpswrdnz2-commits/bobbi-career-demo`。
+- 封面保持三枚按钮横向排列；结尾页保持三枚按钮在深色面板内纵向排列，没有增加新页面或修改演示结构。
+- 更新 `bobbi-portal/tests/check.mjs`，强制校验 GitHub 地址和“查看 GitHub”入口在首尾页各出现一次。
+- 自动检查通过；在 1280×720 桌面视口逐页核对首尾页，并在 390×844 手机视口确认固定 16:9 舞台无横向或纵向溢出。
