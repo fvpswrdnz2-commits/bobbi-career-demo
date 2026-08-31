@@ -214,3 +214,5 @@
 - 用户确认敏感资料上传后，已创建私有 GitHub 仓库 `https://github.com/fvpswrdnz2-commits/bobbi-career-demo`，推送根提交并让本地 `main` 跟踪 `origin/main`。
 - 安装 Vercel GitHub App 时采用“Only select repositories”，只授予 `bobbi-career-demo` 仓库权限；两个既有 Vercel 项目均已连接该仓库，生产分支均为 `main`。
 - Vercel Root Directory 已分别设置为：完整原型 `share-site/public`、Frontend Slides `bobbi-portal`。后续交付改为测试通过后提交并推送，由 Vercel 自动部署，不再手工执行生产部署命令。
+- 新增中文 `README.md` 与英文 `README.en.md`，包含双语切换、在线体验、功能范围、目录结构、本地检查、双方案边界和数据使用说明。
+- 用户知悉仓库包含 Bobby 联系方式、十份公开投稿资料和完整产品文档，并明确要求保留现有内容原样公开；GitHub 仓库可见性据此调整为 Public。
