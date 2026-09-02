@@ -22,7 +22,7 @@ The full prototype contains three entry points:
 - 27 high-fidelity product pages
 - 10 structured career profile samples
 - Search by submission number, education background, industry, and role
-- Explainable ranking based on tag matching, keyword hits, and availability
+- Direction-diverse homepage ordering and explainable search matching across target role, proven experience, education, and consultation topic
 - Desktop prototype workspace with mobile page previews
 - A standalone HTML product presentation
 - Automatic Vercel deployments after pushes to the GitHub `main` branch

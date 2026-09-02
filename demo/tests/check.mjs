@@ -95,6 +95,17 @@ for (const [query, id] of expectedFirstResult) {
   assert.ok(results[0].reasons.length >= 1, `${query} 必须返回可解释的匹配理由`);
 }
 assert.ok(search.rankProfiles('政策行').slice(0, 3).some((result) => result.profile.id === '349'), '政策行搜索的前三位应包含投稿 349');
+const searchOrderBeforeAvailabilityChange = search.rankProfiles('银行总行 Offer选择').map((result) => result.profile.id);
+const homeOrderBeforeAvailabilityChange = search.rankProfiles('').map((result) => result.profile.id);
+const availabilitySnapshot = profiles.map((profile) => profile.availability);
+profiles.forEach((profile, index) => { profile.availability = { dayOffset: 7 - (index % 7), times: index % 2 ? [] : ['23:30'] }; });
+assert.deepEqual(search.rankProfiles('银行总行 Offer选择').map((result) => result.profile.id), searchOrderBeforeAvailabilityChange, '档期变化不应改变搜索排序');
+assert.deepEqual(search.rankProfiles('').map((result) => result.profile.id), homeOrderBeforeAvailabilityChange, '档期变化不应改变首页排序');
+profiles.forEach((profile, index) => { profile.availability = availabilitySnapshot[index]; });
+for (const result of search.rankProfiles('211 银行总行 Offer选择')) {
+  assert.ok(result.score >= 0 && result.score <= 100, '搜索得分应动态归一为百分制');
+  assert.ok(!/可约|档期|时间/.test(result.reasons.join(' ')), '搜索理由不得包含档期或时间');
+}
 
 assert.ok(appRoot.innerHTML.includes('学长学姐'), '首页应渲染统一算法推荐列表');
 assert.ok(appRoot.innerHTML.includes('快速方向'), '首页应提供快捷方向');

@@ -50,8 +50,9 @@
   function navigate(path) { const next = `#/${path}`; if (location.hash === next) render(); else location.hash = next; }
   function formatDate(dayOffset) { const date = new Date(); date.setHours(12, 0, 0, 0); date.setDate(date.getDate() + dayOffset); const week = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()]; return `${date.getMonth() + 1}月${date.getDate()}日 ${week}`; }
   function nextSlot(profile) { return `${formatDate(profile.availability.dayOffset)} ${profile.availability.times[0]}`; }
-  function tokenForTag(tag, fallbackDimension = 'career') { const normalizedTag = normalize(tag); const found = dictionary.find((item) => item.aliases.some((alias) => normalize(alias) === normalizedTag)); return found || { name: tag, dimension: fallbackDimension, group: `raw:${normalizedTag}`, aliases: [normalizedTag] }; }
-  function profileTokens(profile) { const tokens = []; profile.educationTags.forEach((tag) => tokens.push(tokenForTag(tag, 'education'))); [...profile.careerTags, ...profile.consultTags, ...profile.offers, ...profile.internships].forEach((tag) => tokens.push(tokenForTag(tag, 'career'))); return tokens; }
+  const fieldsFor = (profile, dimension) => { if (dimension === 'education') return [profile.education, ...profile.educationTags]; if (dimension === 'consult') return profile.consultTags; return [profile.headline, profile.summary, profile.sourceTitle, ...profile.careerTags, ...profile.offers, ...profile.internships, ...profile.rawTerms, ...profile.recruitment.flatMap((item) => [item.title, item.text])]; };
+  const includesConcept = (values, concept) => { const text = normalize(values.join(' ')); return concept.aliases.some((alias) => text.includes(normalize(alias))); };
+  const profileConcepts = (profile, dimension) => dictionary.filter((item) => item.dimension === dimension && includesConcept(fieldsFor(profile, dimension), item));
 
   function parseQuery(query) {
     const normalizedQuery = normalize(query);
@@ -62,26 +63,28 @@
     return { normalizedQuery, id: idMatch?.[1] || null, tokens: chosen.map((match) => match.item) };
   }
 
-  function dimensionScore(queryTokens, candidateTokens, dimension) {
-    const requested = queryTokens.filter((token) => token.dimension === dimension); if (!requested.length) return { score: 0, exact: 0, related: 0 };
-    let exact = 0; let related = 0;
-    const values = requested.map((wanted) => { if (candidateTokens.some((item) => item.name === wanted.name)) { exact += 1; return 100; } if (candidateTokens.some((item) => item.dimension === dimension && item.group === wanted.group)) { related += 1; return 60; } return 0; });
-    return { score: values.reduce((sum, value) => sum + value, 0) / values.length, exact, related };
-  }
-
-  function availabilityScore(profile) { const offset = profile.availability.dayOffset; if (offset <= 1) return 100; if (offset <= 3) return 80; if (offset <= 5) return 60; return 40; }
+  const relatedGroups = new Map([
+    ['bank', new Set(['asset-management', 'securities', 'insurance', 'public-sector'])], ['asset-management', new Set(['bank', 'securities', 'primary-market', 'insurance'])],
+    ['securities', new Set(['bank', 'asset-management', 'primary-market'])], ['primary-market', new Set(['asset-management', 'securities', 'business-strategy'])],
+    ['insurance', new Set(['bank', 'asset-management'])], ['public-sector', new Set(['bank', 'asset-management'])],
+    ['internet-product', new Set(['project-management', 'business-strategy'])], ['project-management', new Set(['internet-product', 'business-strategy', 'management-trainee'])],
+    ['business-strategy', new Set(['internet-product', 'project-management', 'primary-market'])], ['management-trainee', new Set(['project-management', 'pharma'])], ['pharma', new Set(['management-trainee'])],
+  ]);
+  const relation = (wanted, candidates) => { if (candidates.some((item) => item.name === wanted.name)) return 1; if (candidates.some((item) => item.group === wanted.group)) return .7; if (candidates.some((item) => relatedGroups.get(wanted.group)?.has(item.group))) return .4; return 0; };
+  function dimensionScore(requested, profile, dimension) { if (!requested.length) return { ratio: 0, exact: 0 }; const candidates = profileConcepts(profile, dimension); const ratios = requested.map((wanted) => relation(wanted, candidates)); return { ratio: ratios.reduce((sum, value) => sum + value, 0) / ratios.length, exact: ratios.filter((value) => value === 1).length }; }
+  function evidenceScore(requested, profile) { if (!requested.length) return { ratio: 0, label: '', concept: null }; const candidates = profileConcepts(profile, 'career'); const results = requested.map((wanted) => { const finalText = profile.recruitment.filter((item) => /最终去向|最终选择|最终结果/.test(item.title)).map((item) => item.text); const explicitDestination = /上岸|入职|最终|落地/.test(profile.sourceTitle) ? [profile.sourceTitle] : []; const recruitment = profile.recruitment.map((item) => `${item.title} ${item.text}`).filter((text) => includesConcept([text], wanted)); let depth = 0; let label = ''; if (includesConcept([...finalText, ...explicitDestination], wanted)) { depth = 1; label = '最终去向'; } else if (recruitment.some((text) => /留用/.test(text))) { depth = .85; label = '暑期留用 Offer'; } else if (includesConcept(profile.offers, wanted)) { depth = .9; label = '获得 Offer'; } else if (recruitment.some((text) => /终面/.test(text))) { depth = .7; label = '进入终面'; } else if (recruitment.some((text) => /面试|流程/.test(text))) { depth = .5; label = '具有面试经历'; } else if (recruitment.some((text) => /简历/.test(text))) { depth = .25; label = '通过简历'; } else if (includesConcept(profile.internships, wanted) || includesConcept(profile.careerTags, wanted)) { depth = .2; label = '具有相关经历'; } return { ratio: depth * relation(wanted, candidates), label, concept: wanted }; }); const strongest = [...results].sort((a, b) => b.ratio - a.ratio)[0]; return { ratio: results.reduce((sum, item) => sum + item.ratio, 0) / results.length, label: strongest.label, concept: strongest.concept }; }
+  function homepageProfiles() { const queues = new Map(); profiles.forEach((profile) => { const group = profileConcepts(profile, 'career')[0]?.group || 'other'; if (!queues.has(group)) queues.set(group, []); queues.get(group).push(profile); }); const results = []; while ([...queues.values()].some((queue) => queue.length)) for (const queue of queues.values()) { const profile = queue.shift(); if (profile) results.push({ profile, score: 0, exactCount: 0, reasons: [] }); } return results; }
   function rankProfiles(query) {
     const parsed = parseQuery(query);
     if (parsed.id) { const exact = profileById(parsed.id); return exact ? [{ profile: exact, score: 100, exactCount: 1, reasons: [`投稿编号 #${exact.id} 精确直达`] }] : []; }
+    if (!query) return homepageProfiles();
     return profiles.map((profile) => {
-      const candidateTokens = profileTokens(profile); const education = dimensionScore(parsed.tokens, candidateTokens, 'education'); const career = dimensionScore(parsed.tokens, candidateTokens, 'career');
-      const rawHit = parsed.normalizedQuery && allText(profile).includes(parsed.normalizedQuery); const careerScore = Math.max(career.score, parsed.tokens.length === 0 && rawHit ? 100 : 0); const availability = availabilityScore(profile);
-      const score = education.score * .2 + careerScore * .5 + availability * .3; const exactCount = education.exact + career.exact + (rawHit ? 1 : 0); const reasons = [];
-      parsed.tokens.forEach((wanted) => { const exact = candidateTokens.some((item) => item.name === wanted.name); const related = candidateTokens.some((item) => item.dimension === wanted.dimension && item.group === wanted.group); if (exact && reasons.length < 3) reasons.push(`完全命中：${wanted.name}`); else if (related && reasons.length < 3) reasons.push(`同类经历：${wanted.name}`); });
-      if (!parsed.tokens.length && rawHit) reasons.push('公开经历与搜索需求一致');
-      if (!query) { reasons.push(`近期可约：${nextSlot(profile)}`); reasons.push(`投稿编号 #${profile.id}`); } else if (reasons.length < 2) reasons.push('近期有可预约时间');
-      return { profile, score, exactCount, reasons: reasons.slice(0, 4), rawHit };
-    }).filter((result) => !query || result.score > 0 || result.rawHit).sort((a, b) => b.score - a.score || b.exactCount - a.exactCount || a.profile.availability.dayOffset - b.profile.availability.dayOffset || Number(a.profile.id) - Number(b.profile.id));
+      const careerRequested = parsed.tokens.filter((token) => token.dimension === 'career'); const educationRequested = parsed.tokens.filter((token) => token.dimension === 'education'); const consultRequested = parsed.tokens.filter((token) => token.dimension === 'consult');
+      const career = dimensionScore(careerRequested, profile, 'career'); const evidence = evidenceScore(careerRequested, profile); const education = dimensionScore(educationRequested, profile, 'education'); const consult = dimensionScore(consultRequested, profile, 'consult');
+      const rawHit = parsed.normalizedQuery && allText(profile).includes(parsed.normalizedQuery); const active = []; if (careerRequested.length) active.push([career.ratio, 40], [evidence.ratio, 30]); if (educationRequested.length) active.push([education.ratio, 15]); if (consultRequested.length) active.push([consult.ratio, 15]); const possible = active.reduce((sum, [, weight]) => sum + weight, 0); const earned = active.reduce((sum, [ratio, weight]) => sum + ratio * weight, 0); const score = possible ? Math.round(earned / possible * 1000) / 10 : (rawHit ? 100 : 0); const reasons = [];
+      if (career.ratio > 0) reasons.push(`方向匹配：${careerRequested.slice(0, 2).map((item) => item.name).join('、')}`); if (evidence.ratio > 0) reasons.push(`${evidence.label}：${evidence.concept.name}`); if (education.ratio > 0) reasons.push(`背景匹配：${educationRequested.slice(0, 2).map((item) => item.name).join('、')}`); if (consult.ratio > 0) reasons.push(`可以聊：${consultRequested.slice(0, 2).map((item) => item.name).join('、')}`); if (!reasons.length && rawHit) reasons.push('公开经历与搜索需求一致');
+      return { profile, score, exactCount: career.exact + education.exact + consult.exact, evidenceRatio: evidence.ratio, consultRatio: consult.ratio, reasons: reasons.slice(0, 3), rawHit };
+    }).filter((result) => result.score > 0 || result.rawHit).sort((a, b) => b.score - a.score || b.exactCount - a.exactCount || b.evidenceRatio - a.evidenceRatio || b.consultRatio - a.consultRatio || Number(a.profile.id) - Number(b.profile.id));
   }
 
   function statusBar() { return `<div class="status-bar"><span>9:41</span><span class="status-icons">${icon('signal')}${icon('wifi')}<i class="battery"></i></span></div>`; }

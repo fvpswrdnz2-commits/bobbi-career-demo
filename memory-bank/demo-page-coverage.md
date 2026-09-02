@@ -1,10 +1,10 @@
 # 方案 B 页面覆盖核对表
 
-> 更新日期：2026-08-27  
+> 更新日期：2026-09-03
 > 当前唯一入口：`prototype/index.html`  
 > 展示起点建议：`prototype/index.html#/student-home`
 
-本表只用于防止沟通版遗漏页面。业务规则仍以 `memory-bank/design-document.md` V1.4 为准。
+本表只用于防止沟通版遗漏页面。业务规则仍以 `memory-bank/design-document.md` V1.5 为准。
 
 ## 预约咨询：10 页
 

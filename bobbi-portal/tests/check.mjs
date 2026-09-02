@@ -48,4 +48,8 @@ for (const forbidden of ["页面地图", "Zara", "style preview", "template.html
   assert.ok(!html.includes(forbidden), `独立产品说明不应出现“${forbidden}”`);
 }
 
+assert.ok(html.includes("首页方向分散"), "产品说明应采用新的首页基础排序口径");
+assert.ok(html.includes("目标方向、实际经历、教育背景和可聊主题"), "产品说明应采用新的四维搜索口径");
+assert.ok(!html.includes("匹配的教育、经历和档期"), "产品说明不应把档期写入搜索理由");
+
 console.log("PASS slides: 7 fixed-stage slides, custom-domain links, prototype-matched theme, 5 real screenshots, first/last GitHub links, keyboard/touch navigation");

@@ -37,6 +37,15 @@
     ['金融央企', 'career', 'public-sector', ['央企', '国企', '国央企', '泛体制']],
     ['信托', 'career', 'asset-management', ['信托业务']],
     ['保险', 'career', 'insurance', ['保险资管', '外资保险']],
+    ['简历优化', 'consult', 'application-material', ['简历修改', '简历打磨', '简历梳理']],
+    ['项目经历梳理', 'consult', 'application-material', ['项目梳理', '经历梳理', '项目经历重构']],
+    ['笔试准备', 'consult', 'written-test', ['笔试', '行测', '行测准备']],
+    ['群面', 'consult', 'interview', ['无领导小组', '无领导', '群面准备']],
+    ['单面', 'consult', 'interview', ['结构化面试', '半结构化面试', '业务面']],
+    ['模拟面试', 'consult', 'interview', ['mock', '面试模拟']],
+    ['Offer选择', 'consult', 'decision', ['offer选择', 'offer比较', '岗位选择', '择offer']],
+    ['求职规划', 'consult', 'planning', ['秋招规划', '春招规划', '求职策略', '赛道选择']],
+    ['转行求职', 'consult', 'planning', ['转行', '跨专业求职', '非相关专业求职']],
   ];
 
   window.BOBBI_TAG_DICTIONARY = definitions.map(([name, dimension, group, aliases]) => ({
@@ -46,4 +55,3 @@
     aliases: [name.toLowerCase(), ...aliases.map((item) => item.toLowerCase())],
   }));
 })();
-
